@@ -2,54 +2,103 @@ import time
 import streamlit as st
 from streamlit_option_menu import option_menu 
 from utils.checker import PasswordAnalyzer
-from utils.generator  import PasswordGenerator
+from utils.generator import PasswordGenerator
 import streamlit.components.v1 as components
 
-# Configure page
+# Configure page with different settings
 st.set_page_config(
-    page_title="SecurePass Analyzer",
+    page_title="PassGuard Pro",
     page_icon="favicon.ico",
-    layout="wide"
+    layout="centered"
 )
 
 # Initialize components
 analyzer = PasswordAnalyzer()
 generator = PasswordGenerator()
 
-# Custom CSS
+# New custom CSS with different color scheme
 st.markdown("""
 <style>
-    /* Original custom styles */
+    /* New color scheme - purple and blue */
     .stProgress > div > div > div > div {
-        background-color: #2ECC71;
+        background-color: #6A5ACD;
     }
     .st-bb {
         background-color: transparent;
     }
     .st-at {
-        background-color: #2ECC71;
+        background-color: #4169E1;
     }
     .st-ae {
-        background-color: #F1C40F;
+        background-color: #9370DB;
     }
     .st-af {
         background-color: #000 !important;
     }
-
-    /* Keep password & text inputs white with black text */
-    input[type="password"], input[type="text"] {
-        background-color: #fff !important;
-        color: #000 !important;
+            
+    /* Main color scheme - purple and blue */
+    .stProgress > div > div > div > div {
+        background-color: #6A5ACD;
+    }
+    
+    /* Improved sidebar styling */
+    [data-testid="stSidebar"] {
+        background-color: #F8F9FF !important;
+        border-right: 1px solid #E0E0E0;
+    }
+    
+    /* Sidebar text color */
+    [data-testid="stSidebar"] .st-emotion-cache-16txtl3 {
+        color: #333333 !important;
+    }
+    
+    /* Sidebar menu item styling */
+    .st-eb {
+        color: #333333 !important;
+    }
+            
+    /* Sidebar selected item */
+    .st-c7 {
+        background-color: #6A5ACD !important;
+        color: white !important;
+    }
+    
+    /* Sidebar hover effect */
+    .st-c6:hover {
+        background-color: #E6E6FA !important;
     }
 
-    /* Eye icon always white, transparent background */
+    /* Input fields */
+    input[type="password"], input[type="text"] {
+        background-color: #F8F9FF !important;
+        color: #000 !important;
+        border: 1px solid #6A5ACD !important;
+    }
+
+    /* Eye icon styling */
     button[aria-label="Show password"], 
     button[aria-label="Hide password"] {
         background: transparent !important;
     }
     button[aria-label="Show password"] svg,
     button[aria-label="Hide password"] svg {
-        color: #fff !important;
+        color: #6A5ACD !important;
+    }
+
+    /* Custom card styling */
+    .custom-card {
+        padding: 20px;
+        border-radius: 15px;
+        background: rgba(106, 90, 205, 0.1);
+        border-left: 5px solid #6A5ACD;
+        margin-bottom: 20px;
+    }
+
+    /* Different hover effects */
+    .stButton>button:hover {
+        background-color: #6A5ACD !important;
+        color: white !important;
+        border: 1px solid #6A5ACD !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -57,116 +106,138 @@ st.markdown("""
 def main():
     with st.sidebar:
         choice = option_menu(
-            menu_title="SecurePass",
+            menu_title="PassGuard Pro",
             options=["Analyzer", "Generator", "Documentation"],
-            icons=["shield-check", "key", "book"],
+            icons=["shield-lock", "key-fill", "file-earmark-text"],
             default_index=0,
             styles={
-                "container": {"padding": "5px"},
-                "icon": {"color": "#2ECC71", "font-size": "18px"}, 
-                "nav-link": {"font-size": "16px", "text-align": "left"},
-                "nav-link-selected": {"background-color": "#2ECC71"},
+                "container": {
+                    "padding": "10px",
+                    "background-color": "#F8F9FF",
+                    "border-radius": "8px"
+                },
+                "icon": {
+                    "color": "#6A5ACD", 
+                    "font-size": "18px"
+                }, 
+                "nav-link": {
+                    "font-size": "16px",
+                    "text-align": "left",
+                    "margin": "8px 0",
+                    "color": "#333333",
+                    "border-radius": "5px",
+                    "padding": "10px"
+                },
+                "nav-link-selected": {
+                    "background-color": "#6A5ACD",
+                    "color": "white",
+                    "font-weight": "bold",
+                    "border-left": "4px solid #4169E1"
+                },
             }
         )
 
     if choice == "Analyzer":
-        st.header("🔍 Password Strength Analyzer")
+        st.header("🔍 Password Strength Inspector")
         with st.form("password_form"):
             col1, col2 = st.columns([3, 1])
             with col1:
                 password = st.text_input(
-                    "Enter password:", 
+                    "Enter password to analyze:", 
                     type="password",
-                    placeholder="Enter your password..."
+                    placeholder="Type your password here...",
+                    help="We never store your passwords"
                 )
             with col2:
                 st.markdown("<br>", unsafe_allow_html=True)
-                analyze_btn = st.form_submit_button("Analyze Security")
+                analyze_btn = st.form_submit_button("Evaluate Security")
             
             if analyze_btn:
                 if not password:
                     st.error("Please enter a password to analyze")
                 else:
-                    with st.spinner("Analyzing security..."):
+                    with st.spinner("Conducting security analysis..."):
                         time.sleep(0.5)
                         score, analysis, entropy = analyzer.analyze_password(password)
                         
-                        # Visual progress
+                        # Visual progress with new colors
                         progress = score / 10
-                        color = "#E74C3C" if score < 4 else "#F1C40F" if score < 7 else "#2ECC71"
+                        color = "#FF6347" if score < 4 else "#FFA500" if score < 7 else "#4169E1"
                         
                         with st.container():
                             st.markdown(f"""
-                            <div style="padding: 20px; border-radius: 10px; background: rgba(46, 204, 113, 0.1);">
-                                <h3 style="color: {color};">Security Score: {score}/10</h3>
-                                <div style="height: 10px; background: #eee; border-radius: 5px;">
+                            <div class="custom-card">
+                                <h3 style="color: {color};">Security Rating: {score}/10</h3>
+                                <div style="height: 10px; background: #eee; border-radius: 5px; margin: 10px 0;">
                                     <div style="width: {progress*100}%; height: 100%; background: {color}; border-radius: 5px;"></div>
                                 </div>
-                                <p>Entropy: {entropy:.1f} bits</p>
+                                <p><strong>Entropy:</strong> {entropy:.1f} bits (higher is better)</p>
                             </div>
                             """, unsafe_allow_html=True)
                             
-                            # Detailed analysis
-                            st.subheader("🔬 Detailed Analysis")
-                            cols = st.columns(4)
+                            # Detailed analysis with new layout
+                            st.subheader("🔍 Detailed Inspection")
+                            cols = st.columns(2)
                             criteria = {
                                 "Length ≥ 8": analysis['length'],
-                                "Uppercase": analysis['uppercase'],
-                                "Lowercase": analysis['lowercase'],
-                                "Digits": analysis['digit'],
-                                "Special Chars": analysis['special'],
-                                "Uncommon": not analysis['common'],
-                                "No Repeats": not analysis['repeats'],
-                                "No Sequences": not analysis['sequential']
+                                "Uppercase Letters": analysis['uppercase'],
+                                "Lowercase Letters": analysis['lowercase'],
+                                "Numbers": analysis['digit'],
+                                "Special Characters": analysis['special'],
+                                "Not Common": not analysis['common'],
+                                "No Repeated Chars": not analysis['repeats'],
+                                "No Sequential Patterns": not analysis['sequential']
                             }
                             
-                            for (text, status), col in zip(criteria.items(), cols * 2):
+                            for (text, status), col in zip(criteria.items(), cols * 4):
                                 col.markdown(f"""
-                                <div style="margin: 10px 0; padding: 15px; border-radius: 10px; 
-                                            background: {'#2ECC7120' if status else '#E74C3C20'}">
-                                    <span style="color: {'#2ECC71' if status else '#E74C3C'}">
+                                <div style="margin: 5px 0; padding: 10px; border-radius: 8px; 
+                                            background: {'#4169E120' if status else '#FF634720'}">
+                                    <span style="color: {'#4169E1' if status else '#FF6347'}">
                                         {'✓' if status else '✗'}
                                     </span> {text}
                                 </div>
                                 """, unsafe_allow_html=True)
                             
-                            # Recommendations
-                            st.subheader("📈 Recommendations")
+                            # Recommendations with different styling
+                            st.subheader("💡 Security Recommendations")
                             if score < 4:
-                                st.error("**Immediate Action Required** - This password is extremely vulnerable!")
+                                st.error("**Critical Risk** - This password is highly vulnerable to attacks!")
                                 if analysis['common']:
-                                    st.error("→ This password is in common breach lists")
+                                    st.error("🚨 This password appears in known breach databases")
                                 if not analysis['length']:
-                                    st.error("→ Extend password length to at least 12 characters")
+                                    st.error("🔒 Increase length to at least 12 characters")
                             elif score < 7:
-                                st.warning("**Needs Improvement** - Consider these enhancements:")
+                                st.warning("**Moderate Security** - Consider these improvements:")
                                 if not analysis['special']:
-                                    st.warning("→ Add special characters (!@#$%^&*)")
+                                    st.warning("✨ Add special characters (!@#$%^&*)")
                                 if analysis['sequential']:
-                                    st.warning("→ Avoid sequential patterns (abc, 123, etc.)")
+                                    st.warning("🔢 Avoid sequential patterns (abc, 123, qwerty)")
                             else:
-                                st.success("**Excellent Security!** - This password meets enterprise-grade standards")
+                                st.success("**Excellent Security** - This password meets high security standards")
 
     elif choice == "Generator":
-        st.header("🔑 Secure Password Generator")
-        col1, col2 = st.columns(2)
+        st.header("🔐 Smart Password Creator")
+        col1, col2 = st.columns([3, 2])
         with col1:
-            length = st.slider("Password Length", 12, 32, 16)
-            generate_btn = st.button("Generate Secure Password")
+            length = st.slider("Select Password Length", 12, 32, 16, help="Longer passwords are more secure")
+            include_symbols = st.checkbox("Include Special Symbols", True)
+            generate_btn = st.button("Generate Strong Password", type="primary")
         
         if generate_btn:
-            with st.spinner("Generating military-grade password..."):
+            with st.spinner("Creating high-entropy password..."):
                 time.sleep(0.3)
                 password = generator.generate_password(length)
-                st.code(password, language="text")
-                st.success("Password generated successfully!")
-                st.markdown(f"""
-                <div style="padding: 15px; background: #2ECC7120; border-radius: 10px;">
-                    {password}
-                </div>
-                """, unsafe_allow_html=True)
                 
-                # Inject HTML and JavaScript for copy-to-clipboard functionality
+                st.markdown("""
+                <div style="margin: 20px 0; padding: 15px; background: #F8F9FF; 
+                            border-radius: 10px; border-left: 5px solid #6A5ACD;">
+                    <h4 style="color: #6A5ACD; margin: 0;">Your Generated Password:</h4>
+                    <p style="font-family: monospace; font-size: 18px; margin: 10px 0;">{password}</p>
+                </div>
+                """.format(password=password), unsafe_allow_html=True)
+                
+                # Copy to clipboard functionality with different styling
                 html_code = f"""
                 <html>
                   <head>
@@ -174,15 +245,21 @@ def main():
                   </head>
                   <body>
                     <button id="copy-btn" 
-                            style="background: #2ECC71; color: white; border: none; padding: 8px 16px; 
-                                   border-radius: 5px; margin-top: 10px;">
-                        Copy to Clipboard
+                            style="background: #6A5ACD; color: white; border: none; padding: 8px 16px; 
+                                   border-radius: 5px; margin-top: 10px; cursor: pointer;
+                                   transition: all 0.3s ease;">
+                        📋 Copy Password
                     </button>
                     <script>
                       document.getElementById("copy-btn").addEventListener("click", function() {{
                         navigator.clipboard.writeText("{password}").then(function() {{
-                          alert("Copied to clipboard!");
-                        }}, function(err) {{
+                          this.textContent = "Copied!";
+                          this.style.background = "#4169E1";
+                          setTimeout(() => {{
+                            this.textContent = "📋 Copy Password";
+                            this.style.background = "#6A5ACD";
+                          }}, 2000);
+                        }}.bind(this), function(err) {{
                           alert("Failed to copy: " + err);
                         }});
                       }});
@@ -190,23 +267,37 @@ def main():
                   </body>
                 </html>
                 """
-                components.html(html_code, height=150)
+                components.html(html_code, height=70)
 
     elif choice == "Documentation":
-        st.header("📚 Security Documentation")
-        with st.expander("Password Best Practices"):
+        st.header("📖 Security Knowledge Base")
+        with st.expander("🔐 Password Creation Guidelines", expanded=True):
             st.markdown("""
-            - **Minimum 12 Characters**: Longer passwords exponentially increase security
-            - **Mix Character Types**: Use upper/lower case, numbers, and symbols
-            - **Avoid Patterns**: Sequential numbers/letters reduce security
-            - **Unique Passwords**: Never reuse passwords across accounts
+            ### Creating Strong Passwords
+            
+            - **Length Matters**: Aim for at least 12-16 characters
+            - **Diversity is Key**: Combine letters (upper and lower case), numbers, and symbols
+            - **Avoid Predictability**: Steer clear of common words, phrases, or patterns
+            - **Uniqueness**: Never reuse passwords across different accounts
+            - **Consider Passphrases**: String of random words can be both strong and memorable
             """)
         
-        with st.expander("Security Metrics Explained"):
+        with st.expander("📊 Understanding Security Metrics"):
             st.markdown("""
-            - **Entropy**: Measures password unpredictability (higher = better)
-            - **Common Patterns**: Checks for dictionary words and common sequences
-            - **Blacklist Check**: Verifies against 10,000+ breached passwords
+            ### How We Evaluate Passwords
+            
+            - **Entropy Score**: Measures the randomness and unpredictability
+            - **Pattern Detection**: Identifies common sequences or keyboard patterns
+            - **Breach Database Check**: Compares against known compromised passwords
+            - **Character Diversity**: Evaluates use of different character types
+            """)
+        
+        with st.expander("🛡️ Additional Security Tips"):
+            st.markdown("""
+            - Use a reputable password manager to store your passwords
+            - Enable two-factor authentication wherever possible
+            - Regularly update important passwords (every 3-6 months)
+            - Be cautious of phishing attempts asking for your credentials
             """)
 
 if __name__ == "__main__":
